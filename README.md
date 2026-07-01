@@ -1,2 +1,2 @@
-# Games-of-Tortu
+# tortu-Games-Drkgel
 This is a project by the school of Drukgyel 
