@@ -1,1 +1,104 @@
+#in this case i will manually add a cube so i can use it as a player
 
+import bpy
+
+#bpy.ops.mesh.primitive_cube_add(location=(0,0,1))
+#n for seeing object location
+#ops is the blenders motion system of moving objects like rotate
+#mesh are 3D shapes made of vertices or points
+#primitive being the word for simple shape as a cube is a simple shape 
+#location + 000 meaning in order x y and z axis
+#tip. i find it useful when you place the cube 1 in z axis as it places the object above the x axis
+#  CATION.if you run the script twice two cubes appear and only the first cube runs 
+#possible remidies remove the script change the script to only make one cube etc etc
+
+
+player = bpy.context.object
+#player is simply the name you are giving the object
+#the context is basically refering to cube you just made above which is the object which is now called the player
+#the player in this sense is only for the python code and doesnt go in the ui
+player.name = "Player"
+#in this 'player' this means that blender itself is now acknowledgeing the name and using it in the ui 
+
+class PLAYER_OT_move(bpy.types.Operator):
+#class means to give a object
+#Player as in the category of player in the above defined like the cube being named player
+#ot as in the operator which means to give a class a fuction like to move in this case
+#(bpy.types.operator): just means the class is a operator same as ot
+    bl_idname = "view3d.player_move"
+#name used by blenders system
+    bl_label = "Player Move"
+#name used by human ppl
+
+    speed = 0.5
+#self explanatory
+
+    def modal(self, context, event):
+#def is for creating a function 
+#modal is a operator flag that runs with continuos input like wasd and runs repeatedly
+#self is reference to itself or the cube in this situation
+#context is whatever is going on with the cube at the current moment or the situation of where we are so the right things are used like active object selected or state of blender
+#event is whatever is happening to the cube like a wasd input
+#Note.while other operators return values after commmands, modal continously takes in input thus it is used for player movement
+        player = bpy.data.objects.get("Player")
+#player is the variable we defined above
+#bpy means all the blender there is to use or its internal system
+#data meaning all the stored data in the ui like the scenes, objects meshes etc in this 1 file
+#objects refer specifically to the objects in the 3d view like our cube
+#get means from all the objects get the objects which has the label player as defined in line 20
+#in summary it tells you to get the player
+        if event.type == 'ESC':
+#if you press esc then you cancel
+            return {'CANCELLED'}
+
+        if player:
+#checks if there is a variable called as a player in the system
+            if event.type == 'W' and event.value == 'PRESS':
+#if event means the in the event you type w to avoid errors like moving when you press differents keys
+#event value == press means that you press and hold the button of w to move 
+#types of values are 'release' which is to let go of pressing which stops the movement
+#then there is click which is to simply click
+
+                player.location.y += self.speed
+#player.location.y is the location of the player in the x y z axis 
+#=+ means to add the distance of where you are going in the defined speed thus self.speed
+            if event.type == 'S' and event.value == 'PRESS':
+                player.location.y -= self.speed
+
+            if event.type == 'A' and event.value == 'PRESS':
+                player.location.x -= self.speed
+
+            if event.type == 'D' and event.value == 'PRESS':
+                player.location.x += self.speed
+                
+            if event.type == 'J' and event.value == 'PRESS':
+                player.location.z += self.speed
+            
+
+        return {'RUNNING_MODAL'}
+#from this you get a return modal it says
+
+    def invoke(self, context, event):
+#def activates the function to invoke or activate the operator 
+#self as in the object itself is selected
+#context is what object is selected and what situation it is in
+#event is the function that happened to the object in motion 
+        context.window_manager.modal_handler_add(self)
+#window manager is the inside system of the ui that controls the ~modals~ and things like input 
+#modal_handler_add gives the system the ability to recieve continuous input
+#self gives the defined function to itself or the player in question
+        return {'RUNNING_MODAL'}
+#tells the computer to keep running and not just die 
+
+
+bpy.utils.register_class(PLAYER_OT_move)
+#bpy.utils is to gain the ability to use the tools for functions like addons
+#register class to take the defined variable from above and register it into the bpy
+#(PLAYER_OT_move) means player is in the player we defined as the class from above
+#OT meaning operator type which means thsat this class has a function or can do something
+#move is what it can specifically do as in the operator type
+bpy.ops.view3d.player_move('INVOKE_DEFAULT')
+#if bpy is the toolshed then ops is the worker
+#view3d.player_move means that the player will move in 3d screen
+#('INVOKE') means to set up the stage for a interactive system where the user can input inputs to run commands
+#('DEFAULT') means that the bl ui just needs to proceed in its most optimal way of programming like how it will adapt to itself, we dont need manual instructions on how it is 3d view and all 
